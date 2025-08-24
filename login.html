@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>App Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2f80ed;
+      --primary-dark: #1c5dc1;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --dark: #343a40;
+      --sidebar-width: 230px;
+    }
+    body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7fc; color: #495057; }
+    .sidebar { 
+      width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
+      background: linear-gradient(180deg, var(--primary), var(--primary-dark)); 
+      color: white; padding-top: 1rem; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .sidebar h4 { font-weight: 700; padding: 0 20px; margin-bottom: 1.5rem; }
+    .sidebar a { display: block; padding: 12px 20px; color: rgba(255,255,255,0.85); text-decoration: none; border-radius: 8px; margin: 6px 12px; }
+    .sidebar a:hover, .sidebar a.active { background-color: rgba(255,255,255,0.2); color: white; }
+    .sidebar a i { margin-right: 8px; }
+    .main { margin-left: var(--sidebar-width); padding: 2rem; }
+    .card { border: none; border-radius: 14px; margin-bottom: 1.8rem; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .card-header { 
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark)); 
+      color: white; font-weight: 600; border-radius: 14px 14px 0 0; 
+      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h4><i class="fas fa-sign-in-alt"></i> Login</h4>
+  <a href="http://127.0.0.1:8080"><i class="fas fa-home"></i> Home</a>
+  <a href="/usersummary"><i class="fas fa-chart-line"></i> Summary</a>
+  <a href="/editprofile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+  <a href="/login" class="active"><i class="fas fa-sign-out-alt"></i> Login</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+  <h2 class="mb-4">User Login</h2>
+
+  <!-- Status Message -->
+  {% if s %}
+    <h5 class="text-center text-danger mb-4">{{s}}</h5>
+  {% endif %}
+
+  <!-- Login Form -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-user me-2"></i> Login</span>
+    </div>
+    <div class="card-body">
+      <form action="/login" method="post">
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="control1" class="form-label">Registered Email ID:</label>
+          <input id="control1" type="text" placeholder="abc@email.com" name="email" class="form-control">
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="control2" class="form-label">Password:</label>
+          <input id="control2" type="password" placeholder="Password" name="pwd" class="form-control">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-4">
+          <input type="submit" class="btn btn-primary" value="Login">
+        </div>
+
+        <div class="mt-3">
+          Don't have an account? <a href="/register">Register</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

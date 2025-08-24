@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2f80ed;
+      --primary-dark: #1c5dc1;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --dark: #343a40;
+      --sidebar-width: 230px;
+    }
+    body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f7fc; color: #495057; }
+    .sidebar { 
+      width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
+      background: linear-gradient(180deg, var(--primary), var(--primary-dark)); 
+      color: white; padding-top: 1rem; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .sidebar h4 { font-weight: 700; padding: 0 20px; margin-bottom: 1.5rem; }
+    .sidebar a { display: block; padding: 12px 20px; color: rgba(255,255,255,0.85); text-decoration: none; border-radius: 8px; margin: 6px 12px; }
+    .sidebar a:hover, .sidebar a.active { background-color: rgba(255,255,255,0.2); color: white; }
+    .sidebar a i { margin-right: 8px; }
+    .main { margin-left: var(--sidebar-width); padding: 2rem; }
+    .card { border: none; border-radius: 14px; margin-bottom: 1.8rem; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .card-header { 
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark)); 
+      color: white; font-weight: 600; border-radius: 14px 14px 0 0; 
+      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h4><i class="fas fa-hospital"></i> Admin</h4>
+  <a href="/adminhome"><i class="fas fa-home"></i> Home</a>
+  <a href="/adminusers"><i class="fas fa-users"></i> Users</a>
+  <a href="/adminsearch" class="active"><i class="fas fa-search"></i> Search</a>
+  <a href="/adminsummary"><i class="fas fa-chart-line"></i> Summary</a>
+  <a href="/login"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<div class="main">
+  <h2 class="mb-4">Welcome, <span class="text-primary">{{Username}}</span></h2>
+
+  <!-- Search Form -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-search me-2"></i> Search Bed</span>
+    </div>
+    <div class="card-body">
+      <form action="/adminsearch" method="post" class="row g-3">
+        <div class="col-md-4">
+          <label for="search" class="form-label">Search By</label>
+          <select id="search" name="search" class="form-select">
+            <option value="User ID">User ID</option>
+            <option value="Address">Address</option>
+            <option value="Pin">Pin Code</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Enter Value</label>
+          <input type="text" class="form-control" placeholder="Type here" name="info">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search"></i> Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="card">
+    <div class="card-header">
+      <span><i class="fas fa-database me-2"></i> Search Results</span>
+    </div>
+    <div class="card-body table-responsive">
+      <div class="mb-3">
+        {% if s=="user" %}
+          {% if k!=[] and k!=None %}
+            <h5>Bed reserved by <span class="text-primary">{{k[0].user_id}}</span></h5>
+          {% else %}
+            <h5>Search bed reserved by User</h5>
+          {% endif %}
+        {% else %}
+          {% if k!=[] and k!=None %}
+            <h5>Beds Available at <span class="text-primary">{{k[0].prime_location_name}}</span></h5>
+          {% else %}
+            <h5>Search Beds Available at Place</h5>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      {% if s=="lot" %}
+        {% if k!=[] and k!=None %}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Prime Location Name</th>
+                <th>Address</th>
+                <th>Pin code</th>
+                <th>Price (per hour)</th>
+                <th>Maximum no. of Beds</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in k %}
+              <tr>
+                <td>{{item.id}}</td>
+                <td>{{item.prime_location_name}}</td>
+                <td>{{item.Address}}</td>
+                <td>{{item.Pin_code}}</td>
+                <td>Rs. {{item.Price}}</td>
+                <td>{{item.maximum_number_of_spots}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <h5 class="text-danger text-center">No records found</h5>
+        {% endif %}
+      {% elif s=="user" %}
+        {% if k!=[] and k!=None %}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Lot ID</th>
+                <th>Spot ID</th>
+                <th>User ID</th>
+                <th>Parking Timestamp</th>
+                <th>Leaving Timestamp</th>
+                <th>Date</th>
+                <th>Vehicle Regd. No.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in k %}
+              <tr>
+                <td>{{item.id}}</td>
+                <td>{{item.Lot_ID}}</td>
+                <td>{{item.spot_id}}</td>
+                <td>{{item.user_id}}</td>
+                <td>{{item.Parking_Timestamp}}</td>
+                <td>{{item.Leaving_Timestamp}}</td>
+                <td>{{item.date}}</td>
+                <td>{{item.VRN}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <h5 class="text-danger text-center">No records found</h5>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

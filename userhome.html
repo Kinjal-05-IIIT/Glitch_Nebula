@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>User Dashboard</title>
+   
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #2f80ed;
+        --primary-dark: #1c5dc1;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --dark: #343a40;
+        --sidebar-width: 230px;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        background: #f4f7fc;
+        color: #495057;
+      }
+      .sidebar {
+        width: var(--sidebar-width);
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: linear-gradient(
+          180deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        color: white;
+        padding-top: 1rem;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar h4 {
+        font-weight: 700;
+        padding: 0 20px;
+        margin-bottom: 1.5rem;
+      }
+      .sidebar a {
+        display: block;
+        padding: 12px 20px;
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        border-radius: 8px;
+        margin: 6px 12px;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+      .sidebar a i {
+        margin-right: 8px;
+      }
+      .main {
+        margin-left: var(--sidebar-width);
+        padding: 2rem;
+      }
+      .card {
+        border: none;
+        border-radius: 14px;
+        margin-bottom: 1.8rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+      .card-header {
+        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        color: white;
+        font-weight: 600;
+        border-radius: 14px 14px 0 0;
+        padding: 12px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h4><i class="fas fa-user"></i> User</h4>
+      <a href="/userhome" class="active"><i class="fas fa-home"></i> Home</a>
+      <a href="/usersummary"><i class="fas fa-chart-line"></i> Summary</a>
+      <a href="/editprofile"><i class="fas fa-user-edit"></i> Edit Profile</a>
+      <a href="/login"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <h2 class="mb-4">Welcome {{Username}}</h2>
+
+      <!-- Recent Parking History -->
+      <div class="card">
+        <div class="card-header">
+          <span
+            ><i class="fas fa-history me-2"></i> Recent Booking Bed
+            History</span
+          >
+        </div>
+        <div class="card-body">
+          {% if b!=[] and b!=None %}
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Location</th>
+                <th>Timestamp</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in b %}
+              <tr>
+                <td>{{item.id}}</td>
+                <td>{{d[item].Address}}</td>
+                {% if item.Parking_Timestamp==item.Leaving_Timestamp %}
+                <td>{{item.Parking_Timestamp}} - now</td>
+                {% else %}
+                <td>{{item.Parking_Timestamp}} - {{item.Leaving_Timestamp}}</td>
+                {% endif %} {% if item.Parking_Timestamp==item.Leaving_Timestamp
+                %}
+                <td>
+                  <form action="/releasePS" method="post">
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-primary"
+                      name="release"
+                      value="{{item.id}}"
+                    >
+                      Release
+                    </button>
+                  </form>
+                </td>
+                {% else %}
+                <td class="text-success fw-bold">Released</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h5 class="text-center text-danger">No history available</h5>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Search Parking Lots -->
+      <div class="card">
+        <div class="card-header">
+          <span
+            ><i class="fas fa-search-location me-2"></i> Search Bed
+            Availability</span
+          >
+        </div>
+        <div class="card-body">
+          <form action="/lotsearch" method="post" class="d-flex">
+            <input
+              type="text"
+              class="form-control me-2"
+              placeholder="Search by Location or Pincode"
+              name="info"
+            />
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Parking Lot Results -->
+      <div class="card">
+        <div class="card-header">
+          {% if k %}
+          <span
+            ><i class="fas fa-map-marker-alt me-2"></i> Beds Available at
+            {{k[0].prime_location_name}}</span
+          >
+          {% else %}
+          <span
+            ><i class="fas fa-map-marker-alt me-2"></i> Beds Available at
+            Place</span
+          >
+          {% endif %}
+        </div>
+        <div class="card-body">
+          {% if k!=[] and k!=None %}
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Address</th>
+                <th>Availability</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in k %}
+              <tr>
+                <td>{{item.id}}</td>
+                <td>{{item.Address}}</td>
+                <td>{{d[item.id]}}</td>
+                {% if d[item.id]!=0 %}
+                <td>
+                  <form action="/bookPS" method="post">
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-primary"
+                      name="book"
+                      value="{{item.id}}"
+                    >
+                      Book
+                    </button>
+                  </form>
+                </td>
+                {% else %}
+                <td class="text-danger fw-bold">All spots booked</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <h5 class="text-center text-danger">No records found</h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
